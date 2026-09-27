@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:skillbridge/widgets/button.dart';
-import 'package:skillbridge/widgets/text_field.dart';
+import 'package:skillbridge/widgets/upload_field.dart';
 
-class InicioSesionScreen extends StatefulWidget {
-  const InicioSesionScreen({super.key});
+class RegistroEstudianteScreen extends StatelessWidget {
+  const RegistroEstudianteScreen({super.key});
 
-  @override
-  State<InicioSesionScreen> createState() => _InicioSesionScreenState();
-}
-
-class _InicioSesionScreenState extends State<InicioSesionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,50 +19,59 @@ class _InicioSesionScreenState extends State<InicioSesionScreen> {
                   child: Center(
                     child: Image.asset(
                       'assets/images/logo.png',
-                      width: 180,
-                      height: 180,
+                      width: 150,
+                      height: 150,
                       fit: BoxFit.contain,
                     ),
                   ),
                 ),
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Container(
                     width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                    margin: const EdgeInsets.symmetric(horizontal: 16.0),
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFF9E9E9E),
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+                        topLeft: Radius.circular(24),
+                        topRight: Radius.circular(24),
                       ),
                     ),
                     padding: const EdgeInsets.all(24.0),
                     child: SingleChildScrollView(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CustomTextField(
-                            label: 'Correo Electrónico',
-                            hintText: 'Ingrese su correo electrónico',
+                          const UploadField(label: 'Institucion'),
+                          const UploadField(label: 'Carrera'),
+                          const SizedBox(height: 16),
+
+                          // Campos con ícono de carga
+                          const UploadField(
+                            label: 'Certificado de alumno regular',
+                            isUpload: true,
                           ),
-                          const SizedBox(height: 20.0),
-                          const CustomTextField(
-                            label: 'Contraseña',
-                            hintText: 'Ingrese su contraseña',
-                            isPassword: true,
+                          const UploadField(
+                            label: 'Copia de DNI',
+                            isUpload: true,
                           ),
-                          const SizedBox(height: 32.0),
+                          const UploadField(
+                            label: 'Constancia de CUIL',
+                            isUpload: true,
+                          ),
+                          const UploadField(
+                            label: 'Certificado Analitico',
+                            isUpload: true,
+                          ),
 
                           SizedBox(
                             width: double.infinity,
                             child: Button(
-                              text: 'Iniciar Sesión',
-                              backgroundColor: const Color(0xFF2D2D2D),
-                              textColor: Colors.white,
+                              text: 'Registrarse',
+                              backgroundColor: Colors.white,
+                              textColor: Colors.black,
                               borderRadius: 8.0,
                               onPressed: () {
-                                //Logica de inicio de sesion
+                                //
                               },
                             ),
                           ),
@@ -79,13 +83,11 @@ class _InicioSesionScreenState extends State<InicioSesionScreen> {
               ],
             ),
             Positioned(
-              top: 16.0,
-              left: 16.0,
+              top: 16,
+              left: 16,
               child: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: () => Navigator.pop(context),
               ),
             ),
           ],

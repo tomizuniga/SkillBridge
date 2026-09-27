@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skillbridge/screens/inicio_sesion.dart';
+import 'package:skillbridge/screens/registro.dart';
 import 'package:skillbridge/widgets/button.dart';
 
 class PantallaIngreso extends StatelessWidget {
@@ -46,6 +47,12 @@ class PantallaIngreso extends StatelessWidget {
                       text: 'Registrarse',
                       onPressed: () {
                         // Navegar a la pantalla de registro
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegistroScreen(),
+                          ),
+                        );
                       },
                     ),
                   ),

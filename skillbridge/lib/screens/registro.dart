@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:skillbridge/widgets/button.dart';
 import 'package:skillbridge/widgets/text_field.dart';
 
-import 'registro_estudiante.dart';
+import 'package:skillbridge/screens/registro_estudiante.dart';
+import 'package:skillbridge/screens/registro_empresa.dart';
+import 'package:skillbridge/screens/registro_universidad.dart';
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
@@ -129,6 +131,24 @@ class _RegistroScreenState extends State<RegistroScreen> {
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           const RegistroEstudianteScreen(),
+                                    ),
+                                  );
+                                }
+                                if (selectedRole == 'Empresa') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const RegistroEmpresaScreen(),
+                                    ),
+                                  );
+                                }
+                                if (selectedRole == 'Universidad') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const RegistroUniversidadScreen(),
                                     ),
                                   );
                                 }

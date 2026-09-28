@@ -1,5 +1,9 @@
+
 import 'package:flutter/material.dart';
+import 'package:skillbridge/screens/dashboard_Empresa.dart';
+import 'package:skillbridge/screens/dashboard_universidad.dart';
 import 'package:skillbridge/widgets/button.dart';
+import 'package:skillbridge/screens/dashBoard_Estudiante.dart';
 import 'package:skillbridge/widgets/text_field.dart';
 
 class InicioSesionScreen extends StatefulWidget {
@@ -8,17 +12,23 @@ class InicioSesionScreen extends StatefulWidget {
   @override
   State<InicioSesionScreen> createState() => _InicioSesionScreenState();
 }
+class _InicioSesionScreenState() extends State<InicioSesionScreen> {
+  String? selectedRole;
+  final List<String> roles = ['Estudiante', 'Universidad', 'Empresa'];
 
-class _InicioSesionScreenState extends State<InicioSesionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
+      backgroundColor: const Color(0xFF0A101D),
       body: SafeArea(
+        // ================= INICIO DEL STACK =================
         child: Stack(
           children: [
+            
+            // --- CAPA 1: Tu diseño original (El fondo, el logo y el formulario) ---
             Column(
               children: [
+                // TERCIO SUPERIOR: EL LOGO
                 Expanded(
                   flex: 1,
                   child: Center(
@@ -30,32 +40,71 @@ class _InicioSesionScreenState extends State<InicioSesionScreen> {
                     ),
                   ),
                 ),
+
+                // DOS TERCIOS INFERIORES: EL FORMULARIO
                 Expanded(
                   flex: 2,
                   child: Container(
                     width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFFF2F4F7),
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12),
                       ),
                     ),
-                    padding: const EdgeInsets.all(24.0),
+                    padding: const EdgeInsets.all(24),
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const CustomTextField(
-                            label: 'Correo Electrónico',
-                            hintText: 'Ingrese su correo electrónico',
+                            label: 'Email',
+                            hintText: 'Value',
                           ),
-                          const SizedBox(height: 20.0),
+                          const SizedBox(height: 20),
                           const CustomTextField(
-                            label: 'Contraseña',
-                            hintText: 'Ingrese su contraseña',
+                            label: 'Password',
+                            hintText: 'Value',
                             isPassword: true,
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Rol',
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF5F6F8),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: selectedRole,
+                                hint: const Text('Value'),
+                                isExpanded: true,
+                                icon: const Icon(Icons.keyboard_arrow_down),
+                                items: roles.map((String role) {
+                                  return DropdownMenuItem<String>(
+                                    value: role,
+                                    child: Text(role),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedRole = newValue;
+                                  });
+                                },
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 32.0),
 
@@ -67,30 +116,73 @@ class _InicioSesionScreenState extends State<InicioSesionScreen> {
                               textColor: Colors.white,
                               borderRadius: 8.0,
                               onPressed: () {
-                                //Logica de inicio de sesion
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+  // 1. Verificamos que el usuario haya seleccionado un rol
+                                  if (selectedRole == null) {
+                                    // Muestra un mensajito en la parte inferior si intentan avanzar sin elegir
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Por favor, seleccione un rol para ingresar al prototipo'),
+                                        backgroundColor: Colors.redAccent,
+                                      ),
+                                    );
+                                    return; // Detiene la ejecución aquí
+                                  }
+
+                                  // 2. Navegación condicional basada en el rol seleccionado
+                                  if (selectedRole == 'Estudiante') {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const Dashboard_Estudiantes_Screen()),
+                                    );
+                                  } else if (selectedRole == 'Empresa') {
+                                    // Aquí pondrás la pantalla de Empresa cuando la creemos
+                                    
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const Dashboard_Empresa_Screen()),
+                                    );
+                            
+                                    
+                                  } else if (selectedRole == 'Universidad') {
+                                    // Aquí pondrás la pantalla de Universidad cuando la creemos
+                                    
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const Dashboard_Universidad_Screen()),
+                                    );
+                                    
+                                  
+                                  }
+                                },
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ), 
+            // --- FIN DE LA CAPA 1 ---
+
+            // --- CAPA 2: El botón flotante para regresar ---
             Positioned(
-              top: 16.0,
-              left: 16.0,
+              top: 16,
+              left: 16,
               child: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context); 
                 },
               ),
             ),
-          ],
-        ),
-      ),
-    );
+            // --- FIN DE LA CAPA 2 ---
+
+          ], // Fin de los children del Stack
+        ), 
+      ), // Fin del SafeArea
+    ); // Fin del Scaffold
   }
 }
+
+

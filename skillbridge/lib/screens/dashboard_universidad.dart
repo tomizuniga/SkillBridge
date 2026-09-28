@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Dashboard_Estudiantes_Screen extends StatelessWidget {
-  const Dashboard_Estudiantes_Screen({super.key});
+class Dashboard_Universidad_Screen extends StatelessWidget {
+  const Dashboard_Universidad_Screen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -102,17 +102,17 @@ class Dashboard_Estudiantes_Screen extends StatelessWidget {
                           
                           // Opción 1: Buscar Trabajos
                           _OpcionDashboard(
-                            titulo: 'Buscar\nTrabajos\nDisponibles',
+                            titulo: 'Gestionar\nalumnos',
                             // Reemplaza esto con la ruta de tu ícono
-                            imagenPath: 'assets/images/work.png', 
+                            imagenPath: 'assets/images/internship-removebg-preview.png', 
                           ),
                           const SizedBox(height: 32),
                           
                           // Opción 2: Gestionar Pasantía
                           _OpcionDashboard(
-                            titulo: 'Gestionar\npasantia',
+                            titulo: 'Cargar\ntrabajos',
                             // Reemplaza esto con la ruta de tu ícono
-                            imagenPath: 'assets/images/internship-removebg-preview.png', 
+                            imagenPath: 'assets/images/work.png', 
                           ),
                         ],
                       ),

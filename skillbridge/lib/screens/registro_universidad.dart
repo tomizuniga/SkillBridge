@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:skillbridge/widgets/button.dart';
 import 'package:skillbridge/widgets/upload_field.dart';
 
+import 'package:skillbridge/screens/pagina_ingreso.dart';
+
 class RegistroUniversidadScreen extends StatelessWidget {
   const RegistroUniversidadScreen({super.key});
 
@@ -72,6 +74,14 @@ class RegistroUniversidadScreen extends StatelessWidget {
                               borderRadius: 8.0,
                               onPressed: () {
                                 //
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const PantallaIngreso(),
+                                  ),
+                                  (Route<dynamic> route) => false,
+                                );
                               },
                             ),
                           ),

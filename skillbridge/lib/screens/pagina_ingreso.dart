@@ -22,6 +22,7 @@ class PantallaIngreso extends StatelessWidget {
                     width: 250,
                     height: 250,
                     fit: BoxFit.contain,
+                    color: Colors.white,
                   ),
                 ),
               ),

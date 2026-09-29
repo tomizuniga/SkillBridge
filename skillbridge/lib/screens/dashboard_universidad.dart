@@ -28,13 +28,15 @@ class Dashboard_Universidad_Screen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0), // Bordes estilo Iniciar Sesión
+                        borderRadius: BorderRadius.circular(
+                          8.0,
+                        ), // Bordes estilo Iniciar Sesión
                       ),
                       child: const Center(
                         child: Text(
-                          'perfil',
+                          'Perfil',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold, 
+                            fontWeight: FontWeight.bold,
                             color: Colors.black,
                             fontSize: 14,
                           ),
@@ -42,7 +44,7 @@ class Dashboard_Universidad_Screen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  
+
                   // Botón Cerrar Sesión
                   InkWell(
                     onTap: () {
@@ -79,10 +81,11 @@ class Dashboard_Universidad_Screen extends StatelessWidget {
                         width: 180,
                         height: 180,
                         fit: BoxFit.contain,
+                        color: Colors.white,
                       ),
                     ),
                   ),
-                  
+
                   // DOS TERCIOS INFERIORES: Bienvenida y Opciones
                   Expanded(
                     flex: 2,
@@ -99,20 +102,20 @@ class Dashboard_Universidad_Screen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 40),
-                          
+
                           // Opción 1: Buscar Trabajos
                           _OpcionDashboard(
                             titulo: 'Gestionar\nalumnos',
                             // Reemplaza esto con la ruta de tu ícono
-                            imagenPath: 'assets/images/internship-removebg-preview.png', 
+                            imagenPath: 'assets/images/internship.png',
                           ),
                           const SizedBox(height: 32),
-                          
+
                           // Opción 2: Gestionar Pasantía
                           _OpcionDashboard(
                             titulo: 'Cargar\ntrabajos',
                             // Reemplaza esto con la ruta de tu ícono
-                            imagenPath: 'assets/images/work.png', 
+                            imagenPath: 'assets/images/work.png',
                           ),
                         ],
                       ),
@@ -133,10 +136,7 @@ class _OpcionDashboard extends StatelessWidget {
   final String titulo;
   final String imagenPath;
 
-  const _OpcionDashboard({
-    required this.titulo,
-    required this.imagenPath,
-  });
+  const _OpcionDashboard({required this.titulo, required this.imagenPath});
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +147,8 @@ class _OpcionDashboard extends StatelessWidget {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Colors.transparent, // Fondo transparente para que resalte tu asset
+            color: Colors
+                .transparent, // Fondo transparente para que resalte tu asset
             borderRadius: BorderRadius.circular(12),
           ),
           child: ClipRRect(
@@ -155,6 +156,7 @@ class _OpcionDashboard extends StatelessWidget {
             child: Image.asset(
               imagenPath,
               fit: BoxFit.contain,
+              color: Colors.white,
               // Esto mostrará un ícono de error temporal si aún no subes la imagen a la carpeta assets
               errorBuilder: (context, error, stackTrace) => Container(
                 color: const Color(0xFFD3D7DC),
@@ -167,10 +169,7 @@ class _OpcionDashboard extends StatelessWidget {
         Text(
           titulo,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-          ),
+          style: const TextStyle(color: Colors.white, fontSize: 14),
         ),
       ],
     );

@@ -1,9 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:skillbridge/screens/dashboard_Empresa.dart';
 import 'package:skillbridge/screens/dashboard_universidad.dart';
 import 'package:skillbridge/widgets/button.dart';
-import 'package:skillbridge/screens/dashBoard_Estudiante.dart';
+import 'package:skillbridge/screens/dashboard_estudiante.dart';
 import 'package:skillbridge/widgets/text_field.dart';
 
 class InicioSesionScreen extends StatefulWidget {
@@ -12,6 +11,7 @@ class InicioSesionScreen extends StatefulWidget {
   @override
   State<InicioSesionScreen> createState() => _InicioSesionScreenState();
 }
+
 class _InicioSesionScreenState() extends State<InicioSesionScreen> {
   String? selectedRole;
   final List<String> roles = ['Estudiante', 'Universidad', 'Empresa'];
@@ -24,7 +24,6 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
         // ================= INICIO DEL STACK =================
         child: Stack(
           children: [
-            
             // --- CAPA 1: Tu diseño original (El fondo, el logo y el formulario) ---
             Column(
               children: [
@@ -37,6 +36,7 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                       width: 180,
                       height: 180,
                       fit: BoxFit.contain,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -84,7 +84,10 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                             decoration: BoxDecoration(
                               color: const Color(0xFFF5F6F8),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: const Color(0xFFE0E0E0), width: 1),
+                              border: Border.all(
+                                color: const Color(0xFFE0E0E0),
+                                width: 1,
+                              ),
                             ),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton<String>(
@@ -116,53 +119,60 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                               textColor: Colors.white,
                               borderRadius: 8.0,
                               onPressed: () {
-  // 1. Verificamos que el usuario haya seleccionado un rol
-                                  if (selectedRole == null) {
-                                    // Muestra un mensajito en la parte inferior si intentan avanzar sin elegir
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Por favor, seleccione un rol para ingresar al prototipo'),
-                                        backgroundColor: Colors.redAccent,
+                                // 1. Verificamos que el usuario haya seleccionado un rol
+                                if (selectedRole == null) {
+                                  // Muestra un mensajito en la parte inferior si intentan avanzar sin elegir
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Por favor, seleccione un rol para ingresar al prototipo',
                                       ),
-                                    );
-                                    return; // Detiene la ejecución aquí
-                                  }
+                                      backgroundColor: Colors.redAccent,
+                                    ),
+                                  );
+                                  return; // Detiene la ejecución aquí
+                                }
 
-                                  // 2. Navegación condicional basada en el rol seleccionado
-                                  if (selectedRole == 'Estudiante') {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const Dashboard_Estudiantes_Screen()),
-                                    );
-                                  } else if (selectedRole == 'Empresa') {
-                                    // Aquí pondrás la pantalla de Empresa cuando la creemos
-                                    
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const Dashboard_Empresa_Screen()),
-                                    );
-                            
-                                    
-                                  } else if (selectedRole == 'Universidad') {
-                                    // Aquí pondrás la pantalla de Universidad cuando la creemos
-                                    
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const Dashboard_Universidad_Screen()),
-                                    );
-                                    
-                                  
-                                  }
-                                },
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ), 
+                                // 2. Navegación condicional basada en el rol seleccionado
+                                if (selectedRole == 'Estudiante') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const Dashboard_Estudiantes_Screen(),
+                                    ),
+                                  );
+                                } else if (selectedRole == 'Empresa') {
+                                  // Aquí pondrás la pantalla de Empresa cuando la creemos
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const Dashboard_Empresa_Screen(),
+                                    ),
+                                  );
+                                } else if (selectedRole == 'Universidad') {
+                                  // Aquí pondrás la pantalla de Universidad cuando la creemos
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const Dashboard_Universidad_Screen(),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             // --- FIN DE LA CAPA 1 ---
 
             // --- CAPA 2: El botón flotante para regresar ---
@@ -172,17 +182,15 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
               child: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
                 onPressed: () {
-                  Navigator.pop(context); 
+                  Navigator.pop(context);
                 },
               ),
             ),
-            // --- FIN DE LA CAPA 2 ---
 
+            // --- FIN DE LA CAPA 2 ---
           ], // Fin de los children del Stack
-        ), 
+        ),
       ), // Fin del SafeArea
     ); // Fin del Scaffold
   }
 }
-
-

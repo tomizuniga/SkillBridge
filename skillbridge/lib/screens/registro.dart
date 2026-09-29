@@ -34,6 +34,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                       width: 180,
                       height: 180,
                       fit: BoxFit.contain,
+                      color: Colors.white,
                     ),
                   ),
                 ),

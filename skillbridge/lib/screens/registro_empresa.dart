@@ -23,6 +23,7 @@ class RegistroEmpresaScreen extends StatelessWidget {
                       width: 150,
                       height: 150,
                       fit: BoxFit.contain,
+                      color: Colors.white,
                     ),
                   ),
                 ),

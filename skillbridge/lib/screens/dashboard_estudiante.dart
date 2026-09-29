@@ -34,7 +34,7 @@ class Dashboard_Estudiantes_Screen extends StatelessWidget {
                       ),
                       child: const Center(
                         child: Text(
-                          'perfil',
+                          'Perfil',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black,

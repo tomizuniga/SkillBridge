@@ -60,13 +60,13 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const CustomTextField(
-                            label: 'Email',
-                            hintText: 'Value',
+                            label: 'Correo Electronico',
+                            hintText: 'Ingrese su correo electronico',
                           ),
                           const SizedBox(height: 20),
                           const CustomTextField(
-                            label: 'Password',
-                            hintText: 'Value',
+                            label: 'Contraseña',
+                            hintText: 'Ingrese su contraseña',
                             isPassword: true,
                           ),
                           const SizedBox(height: 20),
@@ -92,7 +92,9 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton<String>(
                                 value: selectedRole,
-                                hint: const Text('Value'),
+                                hint: const Text(
+                                  '(Solo como auxiliar en esta version)',
+                                ),
                                 isExpanded: true,
                                 icon: const Icon(Icons.keyboard_arrow_down),
                                 items: roles.map((String role) {

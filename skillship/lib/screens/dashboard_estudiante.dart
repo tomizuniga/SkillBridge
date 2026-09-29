@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skillship/screens/buscar_trabajos_estudiante.dart';
 
 class DashboardEstudiantesScreen extends StatelessWidget {
   const DashboardEstudiantesScreen({super.key});
@@ -21,7 +22,7 @@ class DashboardEstudiantesScreen extends StatelessWidget {
                   // Botón de Perfil (cuadrado con bordes redondeados)
                   InkWell(
                     onTap: () {
-                      // Navegar a pantalla de perfil
+                      // Navegar a pantalla de Perfil
                     },
                     child: Container(
                       width: double.infinity,
@@ -106,8 +107,16 @@ class DashboardEstudiantesScreen extends StatelessWidget {
                           // Opción 1: Buscar Trabajos
                           _OpcionDashboard(
                             titulo: 'Buscar\nTrabajos\nDisponibles',
-                            // Reemplaza esto con la ruta de tu ícono
                             imagenPath: 'assets/images/work.png',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const BuscarTrabajosScreen(),
+                                ),
+                              );
+                            },
                           ),
                           const SizedBox(height: 32),
 
@@ -135,43 +144,56 @@ class DashboardEstudiantesScreen extends StatelessWidget {
 class _OpcionDashboard extends StatelessWidget {
   final String titulo;
   final String imagenPath;
+  final VoidCallback? onTap;
 
-  const _OpcionDashboard({required this.titulo, required this.imagenPath});
+  const _OpcionDashboard({
+    required this.titulo,
+    required this.imagenPath,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Contenedor del ícono
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: Colors
-                .transparent, // Fondo transparente para que resalte tu asset
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              imagenPath,
-              fit: BoxFit.contain,
-              color: Colors.white,
-              // Esto mostrará un ícono de error temporal si aún no subes la imagen a la carpeta assets
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: const Color(0xFFD3D7DC),
-                child: const Icon(Icons.image, color: Colors.grey, size: 40),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imagenPath,
+                  fit: BoxFit.contain,
+                  color: Colors.white,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: const Color(0xFFD3D7DC),
+                    child: const Icon(
+                      Icons.image,
+                      color: Colors.grey,
+                      size: 40,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+            const SizedBox(height: 12),
+            Text(
+              titulo,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        Text(
-          titulo,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
-        ),
-      ],
+      ),
     );
   }
 }

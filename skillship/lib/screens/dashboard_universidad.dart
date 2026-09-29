@@ -21,7 +21,7 @@ class DashboardUniversidadScreen extends StatelessWidget {
                   // Botón de Perfil (cuadrado con bordes redondeados)
                   InkWell(
                     onTap: () {
-                      // Navegar a pantalla de perfil
+                      // Navegar a pantalla de Perfil
                     },
                     child: Container(
                       width: double.infinity,

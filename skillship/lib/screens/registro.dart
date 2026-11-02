@@ -14,8 +14,21 @@ class RegistroScreen extends StatefulWidget {
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
+  // Controladores para los campos generales
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
   String? selectedRole;
   final List<String> roles = ['Estudiante', 'Empresa', 'Universidad'];
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,20 +68,23 @@ class _RegistroScreenState extends State<RegistroScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CustomTextField(
+                          CustomTextField(
+                            controller: _emailController, // Asegúrate de que tu CustomTextField acepte controller
                             label: 'Correo Electronico',
                             hintText: 'Ingrese su correo electronico',
                           ),
                           const SizedBox(height: 16),
 
-                          const CustomTextField(
+                          CustomTextField(
+                            controller: _passwordController,
                             label: 'Contraseña',
                             hintText: 'Ingrese su contraseña',
                             isPassword: true,
                           ),
                           const SizedBox(height: 16),
 
-                          const CustomTextField(
+                          CustomTextField(
+                            controller: _confirmPasswordController,
                             label: 'Confirmar Contraseña',
                             hintText: 'Reingrese su contraseña',
                             isPassword: true,
@@ -124,32 +140,47 @@ class _RegistroScreenState extends State<RegistroScreen> {
                               textColor: Colors.white,
                               borderRadius: 8.0,
                               onPressed: () {
-                                //agregar ifs para los otros roles
-                                /////
+                                // Validaciones básicas
+                                if (_emailController.text.isEmpty ||
+                                    _passwordController.text.isEmpty ||
+                                    selectedRole == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Por favor completa todos los campos y selecciona un rol')),
+                                  );
+                                  return;
+                                }
+
+                                if (_passwordController.text != _confirmPasswordController.text) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Las contraseñas no coinciden')),
+                                  );
+                                  return;
+                                }
+
+                                // Navegación según el rol
                                 if (selectedRole == 'Estudiante') {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          const RegistroEstudianteScreen(),
+                                      builder: (context) => RegistroEstudianteScreen(
+                                        email: _emailController.text.trim(),
+                                        password: _passwordController.text.trim(),
+                                        rol: selectedRole!,
+                                      ),
                                     ),
                                   );
-                                }
-                                if (selectedRole == 'Empresa') {
+                                } else if (selectedRole == 'Empresa') {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          const RegistroEmpresaScreen(),
+                                      builder: (context) => const RegistroEmpresaScreen(),
                                     ),
                                   );
-                                }
-                                if (selectedRole == 'Universidad') {
+                                } else if (selectedRole == 'Universidad') {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          const RegistroUniversidadScreen(),
+                                      builder: (context) => const RegistroUniversidadScreen(),
                                     ),
                                   );
                                 }

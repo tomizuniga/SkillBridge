@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:skillship/screens/dashboard_empresa.dart';
-import 'package:skillship/screens/dashboard_universidad.dart';
+import 'package:skillship/screens/empresa_main_screen.dart';
+import 'package:skillship/screens/universidad_main_screen.dart';
+import 'package:skillship/screens/estudiante_main_screen.dart';
 import 'package:skillship/widgets/button.dart';
-import 'package:skillship/screens/dashboard_estudiante.dart';
 import 'package:skillship/widgets/text_field.dart';
 
 class InicioSesionScreen extends StatefulWidget {
@@ -141,7 +141,7 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const DashboardEstudiantesScreen(),
+                                          const EstudianteMainScreen(),
                                     ),
                                   );
                                 } else if (selectedRole == 'Empresa') {
@@ -151,7 +151,7 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const DashboardEmpresaScreen(),
+                                          const EmpresaMainScreen(),
                                     ),
                                   );
                                 } else if (selectedRole == 'Universidad') {
@@ -161,7 +161,7 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const DashboardUniversidadScreen(),
+                                          const UniversidadMainScreen(),
                                     ),
                                   );
                                 }

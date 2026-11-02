@@ -1,11 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:skillship/widgets/button.dart';
 import 'package:skillship/widgets/upload_field.dart';
-
 import 'package:skillship/screens/pagina_ingreso.dart';
 
-class RegistroEstudianteScreen extends StatelessWidget {
-  const RegistroEstudianteScreen({super.key});
+class RegistroEstudianteScreen extends StatefulWidget {
+  final String email;
+  final String password;
+  final String rol;
+
+  const RegistroEstudianteScreen({
+    super.key,
+    required this.email,
+    required this.password,
+    required this.rol,
+  });
+
+  @override
+  State<RegistroEstudianteScreen> createState() => _RegistroEstudianteScreenState();
+}
+
+class _RegistroEstudianteScreenState extends State<RegistroEstudianteScreen> {
+  // Controladores para los nuevos campos específicos del estudiante
+  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _institucionController = TextEditingController();
+  final TextEditingController _carreraController = TextEditingController();
+
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nombreController.dispose();
+    _institucionController.dispose();
+    _carreraController.dispose();
+    super.dispose();
+  }
+
+  // Método para guardar todo en Supabase
+  Future<void> _guardarRegistroEnSupabase() async {
+    if (_nombreController.text.isEmpty ||
+        _institucionController.text.isEmpty ||
+        _carreraController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor completa todos los campos de texto')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      // 1. Insertar el usuario principal en la tabla 'usuarios'
+      final usuarioResponse = await Supabase.instance.client
+          .from('usuarios')
+          .insert({
+            'email': widget.email,
+            'password': widget.password,
+            'rol': widget.rol,
+          })
+          .select('id')
+          .single();
+
+      final int usuarioId = usuarioResponse['id'];
+
+      // 2. Insertar los datos del alumno en la tabla 'perfiles_estudiantes'
+      await Supabase.instance.client.from('perfiles_estudiantes').insert({
+        'usuario_id': usuarioId,
+        'nombre': _nombreController.text.trim(),
+        'institucion': _institucionController.text.trim(),
+        'carrera': _carreraController.text.trim(),
+      });
+
+      // Si todo sale bien, redirigimos a la pantalla de ingreso
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const PantallaIngreso()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al registrar en Supabase: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +127,40 @@ class RegistroEstudianteScreen extends StatelessWidget {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          const UploadField(label: 'Institucion'),
-                          const UploadField(label: 'Carrera'),
+                          // NUEVO: Campo de Nombre (colocado encima de Institución)
+                          TextField(
+                            controller: _nombreController,
+                            decoration: const InputDecoration(
+                              labelText: 'Nombre completo',
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
                           const SizedBox(height: 16),
 
-                          // Campos con ícono de carga
+                          // Campo de Institución
+                          TextField(
+                            controller: _institucionController,
+                            decoration: const InputDecoration(
+                              labelText: 'Institucion',
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Campo de Carrera
+                          TextField(
+                            controller: _carreraController,
+                            decoration: const InputDecoration(
+                              labelText: 'Carrera',
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Campos con ícono de carga (Documentos)
                           const UploadField(
                             label: 'Certificado de alumno regular',
                             isUpload: true,
@@ -65,26 +177,19 @@ class RegistroEstudianteScreen extends StatelessWidget {
                             label: 'Certificado Analitico',
                             isUpload: true,
                           ),
+                          const SizedBox(height: 16),
 
                           SizedBox(
                             width: double.infinity,
-                            child: Button(
-                              text: 'Registrarse',
-                              backgroundColor: Colors.white,
-                              textColor: Colors.black,
-                              borderRadius: 8.0,
-                              onPressed: () {
-                                //
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const PantallaIngreso(),
+                            child: _isLoading
+                                ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                                : Button(
+                                    text: 'Registrarse',
+                                    backgroundColor: Colors.white,
+                                    textColor: Colors.black,
+                                    borderRadius: 8.0,
+                                    onPressed: _guardarRegistroEnSupabase,
                                   ),
-                                  (Route<dynamic> route) => false,
-                                );
-                              },
-                            ),
                           ),
                         ],
                       ),

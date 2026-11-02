@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:skillship/models/pasantia.dart';
 import 'package:skillship/models/postulacion.dart';
+import 'package:skillship/models/reclamo.dart';
 import 'package:skillship/models/usuario.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -311,6 +312,34 @@ class SupabaseService {
         .order('fecha');
 
     return filas.map(RegistroHora.fromMap).toList();
+  }
+
+  /// Reclamos enviados para una postulación, del más nuevo al más viejo.
+  Future<List<Reclamo>> obtenerReclamos({required int postulacionId}) async {
+    final filas = await _client
+        .from('reclamos')
+        .select()
+        .eq('postulacion_id', postulacionId)
+        .order('created_at', ascending: false);
+
+    return filas.map(Reclamo.fromMap).toList();
+  }
+
+  /// Guarda un reclamo del estudiante en la base de datos.
+  Future<void> enviarReclamo({
+    required int postulacionId,
+    required String mensaje,
+  }) async {
+    final texto = mensaje.trim();
+    if (texto.isEmpty) {
+      throw Exception('Escribí el reclamo antes de enviarlo.');
+    }
+
+    await _client.from('reclamos').insert({
+      'postulacion_id': postulacionId,
+      'mensaje': texto,
+      'estado': 'abierto',
+    });
   }
 
   // ===========================================================================

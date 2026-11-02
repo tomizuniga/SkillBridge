@@ -8,13 +8,14 @@
 --
 -- Qué hace:
 --   * Crea las tablas base solo si faltan (no toca lo que ya tenés)
---   * Crea las tablas nuevas: pasantias, postulaciones, horas_pasantia
+--   * Crea las tablas nuevas: pasantias, postulaciones, horas_pasantia, reclamos
 --   * Abre las políticas RLS para que la app (rol anon) pueda leer y escribir
 --   * Crea el bucket "documentos" de Storage + sus permisos
 --   * Carga datos de ejemplo: 6 propuestas de pasantía, 1 aceptada y en proceso
---     con horas cargadas, y 1 postulación pendiente
+--     con horas cargadas y un reclamo, y 1 postulación pendiente
 --
--- Es idempotente: volver a ejecutarlo no duplica nada.
+-- Es idempotente: volver a ejecutarlo no duplica nada (podés pegarlo de nuevo
+-- si ya lo corriste antes, así se agregan las tablas nuevas que falten).
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
@@ -84,8 +85,18 @@ create table if not exists public.horas_pasantia (
   created_at     timestamptz not null default now()
 );
 
+-- Reclamos que el estudiante deja durante la pasantía
+create table if not exists public.reclamos (
+  id             bigserial primary key,
+  postulacion_id bigint not null references public.postulaciones (id) on delete cascade,
+  mensaje        text not null,
+  estado         text not null default 'abierto',      -- abierto | resuelto
+  created_at     timestamptz not null default now()
+);
+
 create index if not exists idx_postulaciones_usuario on public.postulaciones (usuario_id);
 create index if not exists idx_horas_postulacion     on public.horas_pasantia (postulacion_id);
+create index if not exists idx_reclamos_postulacion  on public.reclamos (postulacion_id);
 
 -- -----------------------------------------------------------------------------
 -- 3. POLÍTICAS RLS (la app no usa Supabase Auth: entra con la clave pública)
@@ -106,7 +117,7 @@ declare t text;
 begin
   foreach t in array array[
     'usuarios', 'perfiles_estudiantes', 'documentos_registro',
-    'pasantias', 'postulaciones', 'horas_pasantia'
+    'pasantias', 'postulaciones', 'horas_pasantia', 'reclamos'
   ] loop
     execute format(
       'drop policy if exists "acceso_prototipo" on public.%I', t);
@@ -239,6 +250,20 @@ begin
       (v_post_id, date '2026-09-21', 6, 'Semana 3: corrección de bugs en el módulo de login'),
       (v_post_id, date '2026-09-28', 8, 'Semana 4: tests automatizados del servicio de contratos'),
       (v_post_id, date '2026-10-05', 8, 'Semana 5: despliegue a staging y documentación');
+  end if;
+
+  -- Un reclamo de ejemplo, para ver el apartado con datos
+  if not exists (
+    select 1 from public.reclamos
+     where postulacion_id = v_post_id
+       and mensaje = 'El tutor no se presentó a la reunión de seguimiento del 30/09. Solicito que se reprograme.'
+  ) then
+    insert into public.reclamos (postulacion_id, mensaje, estado)
+    values (
+      v_post_id,
+      'El tutor no se presentó a la reunión de seguimiento del 30/09. Solicito que se reprograme.',
+      'abierto'
+    );
   end if;
 
   -- b) Una PENDIENTE, para ver el estado "esperando respuesta"

@@ -12,7 +12,7 @@ class UniversidadGestionarAlumnosScreen extends StatelessWidget {
       {'nombre': 'Alumno 3', 'detalle': 'Descripcion'},
       {'nombre': 'Alumno 4', 'detalle': 'Descripcion'},
       {'nombre': 'Alumno 5', 'detalle': 'Descripcion'},
-    ];;
+    ];
 
     return Padding(
       padding: const EdgeInsets.all(16.0),

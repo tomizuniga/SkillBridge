@@ -1,8 +1,9 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:skillship/screens/pagina_ingreso.dart';
+import 'package:skillship/Services/supabase_service.dart';
 import 'package:skillship/widgets/button.dart';
 import 'package:skillship/widgets/upload_field.dart';
-import 'package:skillship/screens/pagina_ingreso.dart';
 
 class RegistroEstudianteScreen extends StatefulWidget {
   final String email;
@@ -26,6 +27,17 @@ class _RegistroEstudianteScreenState extends State<RegistroEstudianteScreen> {
   final TextEditingController _institucionController = TextEditingController();
   final TextEditingController _carreraController = TextEditingController();
 
+  /// Documentos que pide la facultad, en el mismo orden en que se muestran.
+  static const List<String> _tiposDocumento = [
+    'Certificado de alumno regular',
+    'Copia de DNI',
+    'Constancia de CUIL',
+    'Certificado Analitico',
+  ];
+
+  /// etiqueta del campo -> archivo elegido por el usuario
+  final Map<String, PlatformFile> _documentos = {};
+
   bool _isLoading = false;
 
   @override
@@ -36,13 +48,36 @@ class _RegistroEstudianteScreenState extends State<RegistroEstudianteScreen> {
     super.dispose();
   }
 
+  // Abre el selector de archivos nativo y guarda el elegido.
+  Future<void> _seleccionarArchivo(String tipo) async {
+    try {
+      final archivos = await FilePicker.pickFiles(type: FileType.any);
+      if (archivos.isEmpty) return; // el usuario canceló
+      setState(() => _documentos[tipo] = archivos.first);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No se pudo abrir el selector de archivos: $e')),
+        );
+      }
+    }
+  }
+
   // Método para guardar todo en Supabase
   Future<void> _guardarRegistroEnSupabase() async {
-    if (_nombreController.text.isEmpty ||
-        _institucionController.text.isEmpty ||
-        _carreraController.text.isEmpty) {
+    if (_nombreController.text.trim().isEmpty ||
+        _institucionController.text.trim().isEmpty ||
+        _carreraController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor completa todos los campos de texto')),
+      );
+      return;
+    }
+
+    final faltantes = _tiposDocumento.where((t) => !_documentos.containsKey(t));
+    if (faltantes.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Faltan archivos por cargar: ${faltantes.join(', ')}')),
       );
       return;
     }
@@ -50,44 +85,52 @@ class _RegistroEstudianteScreenState extends State<RegistroEstudianteScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // 1. Insertar el usuario principal en la tabla 'usuarios'
-      final usuarioResponse = await Supabase.instance.client
-          .from('usuarios')
-          .insert({
-            'email': widget.email,
-            'password': widget.password,
-            'rol': widget.rol,
-          })
-          .select('id')
-          .single();
+      await SupabaseService.instance.registrarEstudianteCompleto(
+        email: widget.email,
+        password: widget.password,
+        rol: widget.rol,
+        nombre: _nombreController.text,
+        institucion: _institucionController.text,
+        carrera: _carreraController.text,
+        documentos: _documentos,
+      );
 
-      final int usuarioId = usuarioResponse['id'];
+      if (!mounted) return;
 
-      // 2. Insertar los datos del alumno en la tabla 'perfiles_estudiantes'
-      await Supabase.instance.client.from('perfiles_estudiantes').insert({
-        'usuario_id': usuarioId,
-        'nombre': _nombreController.text.trim(),
-        'institucion': _institucionController.text.trim(),
-        'carrera': _carreraController.text.trim(),
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registro completado. Ya podés iniciar sesión.'),
+          backgroundColor: Color(0xFF2D2D2D),
+        ),
+      );
 
       // Si todo sale bien, redirigimos a la pantalla de ingreso
-      if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const PantallaIngreso()),
-          (Route<dynamic> route) => false,
-        );
-      }
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const PantallaIngreso()),
+        (Route<dynamic> route) => false,
+      );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al registrar en Supabase: $e')),
+          SnackBar(
+            content: Text(SupabaseService.mensajeError(e)),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Widget _campoDocumento(String tipo) {
+    return UploadField(
+      label: tipo,
+      isUpload: true,
+      fileName: _documentos[tipo]?.name,
+      onTap: () => _seleccionarArchivo(tipo),
+    );
   }
 
   @override
@@ -161,22 +204,10 @@ class _RegistroEstudianteScreenState extends State<RegistroEstudianteScreen> {
                           const SizedBox(height: 16),
 
                           // Campos con ícono de carga (Documentos)
-                          const UploadField(
-                            label: 'Certificado de alumno regular',
-                            isUpload: true,
-                          ),
-                          const UploadField(
-                            label: 'Copia de DNI',
-                            isUpload: true,
-                          ),
-                          const UploadField(
-                            label: 'Constancia de CUIL',
-                            isUpload: true,
-                          ),
-                          const UploadField(
-                            label: 'Certificado Analitico',
-                            isUpload: true,
-                          ),
+                          _campoDocumento('Certificado de alumno regular'),
+                          _campoDocumento('Copia de DNI'),
+                          _campoDocumento('Constancia de CUIL'),
+                          _campoDocumento('Certificado Analitico'),
                           const SizedBox(height: 16),
 
                           SizedBox(

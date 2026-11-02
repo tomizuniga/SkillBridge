@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:skillship/models/usuario.dart';
 import 'package:skillship/screens/empresa_main_screen.dart';
 import 'package:skillship/screens/universidad_main_screen.dart';
 import 'package:skillship/screens/estudiante_main_screen.dart';
+import 'package:skillship/Services/supabase_service.dart';
 import 'package:skillship/widgets/button.dart';
 import 'package:skillship/widgets/text_field.dart';
 
@@ -15,6 +17,83 @@ class InicioSesionScreen extends StatefulWidget {
 class _InicioSesionScreenState() extends State<InicioSesionScreen> {
   String? selectedRole;
   final List<String> roles = ['Estudiante', 'Universidad', 'Empresa'];
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _mostrarError(String mensaje) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensaje), backgroundColor: Colors.redAccent),
+    );
+  }
+
+  /// Valida las credenciales contra la tabla `usuarios` y entra según el rol.
+  Future<void> _iniciarSesion() async {
+    if (_emailController.text.trim().isEmpty || _passwordController.text.isEmpty) {
+      _mostrarError('Por favor completa el correo y la contraseña');
+      return;
+    }
+
+    // Verificamos que el usuario haya seleccionado un rol
+    if (selectedRole == null) {
+      _mostrarError('Por favor, seleccione un rol para ingresar al prototipo');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final Usuario usuario = await SupabaseService.instance.iniciarSesion(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (usuario.rol != selectedRole) {
+        _mostrarError('La cuenta corresponde al rol "${usuario.rol}", no al seleccionado');
+        return;
+      }
+
+      if (!mounted) return;
+
+      // Navegación condicional basada en el rol guardado en la base de datos
+      if (usuario.rol == 'Estudiante') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EstudianteMainScreen(usuario: usuario),
+          ),
+        );
+      } else if (usuario.rol == 'Empresa') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const EmpresaMainScreen(),
+          ),
+        );
+      } else if (usuario.rol == 'Universidad') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const UniversidadMainScreen(),
+          ),
+        );
+      }
+    } catch (e) {
+      _mostrarError(SupabaseService.mensajeError(e));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +138,14 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CustomTextField(
+                          CustomTextField(
+                            controller: _emailController,
                             label: 'Correo Electronico',
                             hintText: 'Ingrese su correo electronico',
                           ),
                           const SizedBox(height: 20),
-                          const CustomTextField(
+                          CustomTextField(
+                            controller: _passwordController,
                             label: 'Contraseña',
                             hintText: 'Ingrese su contraseña',
                             isPassword: true,
@@ -115,58 +196,19 @@ class _InicioSesionScreenState() extends State<InicioSesionScreen> {
 
                           SizedBox(
                             width: double.infinity,
-                            child: Button(
-                              text: 'Iniciar Sesión',
-                              backgroundColor: const Color(0xFF2D2D2D),
-                              textColor: Colors.white,
-                              borderRadius: 8.0,
-                              onPressed: () {
-                                // 1. Verificamos que el usuario haya seleccionado un rol
-                                if (selectedRole == null) {
-                                  // Muestra un mensajito en la parte inferior si intentan avanzar sin elegir
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Por favor, seleccione un rol para ingresar al prototipo',
-                                      ),
-                                      backgroundColor: Colors.redAccent,
+                            child: _isLoading
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF2D2D2D),
                                     ),
-                                  );
-                                  return; // Detiene la ejecución aquí
-                                }
-
-                                // 2. Navegación condicional basada en el rol seleccionado
-                                if (selectedRole == 'Estudiante') {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const EstudianteMainScreen(),
-                                    ),
-                                  );
-                                } else if (selectedRole == 'Empresa') {
-                                  // Aquí pondrás la pantalla de Empresa cuando la creemos
-
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const EmpresaMainScreen(),
-                                    ),
-                                  );
-                                } else if (selectedRole == 'Universidad') {
-                                  // Aquí pondrás la pantalla de Universidad cuando la creemos
-
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const UniversidadMainScreen(),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
+                                  )
+                                : Button(
+                                    text: 'Iniciar Sesión',
+                                    backgroundColor: const Color(0xFF2D2D2D),
+                                    textColor: Colors.white,
+                                    borderRadius: 8.0,
+                                    onPressed: _iniciarSesion,
+                                  ),
                           ),
                         ],
                       ),

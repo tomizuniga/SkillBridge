@@ -173,14 +173,20 @@ class _RegistroScreenState extends State<RegistroScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const RegistroEmpresaScreen(),
+                                      builder: (context) => RegistroEmpresaScreen(
+                                        email: _emailController.text.trim(),
+                                        password: _passwordController.text.trim(),
+                                      ),
                                     ),
                                   );
                                 } else if (selectedRole == 'Universidad') {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const RegistroUniversidadScreen(),
+                                      builder: (context) => RegistroUniversidadScreen(
+                                        email: _emailController.text.trim(),
+                                        password: _passwordController.text.trim(),
+                                      ),
                                     ),
                                   );
                                 }

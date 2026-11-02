@@ -1,10 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:skillship/Services/supabase_service.dart';
 import 'package:skillship/widgets/button.dart';
 import 'package:skillship/widgets/upload_field.dart';
 import 'package:skillship/screens/pagina_ingreso.dart';
 
-class RegistroEmpresaScreen extends StatelessWidget {
-  const RegistroEmpresaScreen({super.key});
+class RegistroEmpresaScreen extends StatefulWidget {
+  final String email;
+  final String password;
+
+  const RegistroEmpresaScreen({
+    super.key,
+    required this.email,
+    required this.password,
+  });
+
+  @override
+  State<RegistroEmpresaScreen> createState() => _RegistroEmpresaScreenState();
+}
+
+class _RegistroEmpresaScreenState extends State<RegistroEmpresaScreen> {
+  bool _isLoading = false;
+
+  Future<void> _registrarse() async {
+    setState(() => _isLoading = true);
+
+    try {
+      // Cuenta de acceso: el resto de los datos sigue siendo maqueta.
+      await SupabaseService.instance.crearCuenta(
+        email: widget.email,
+        password: widget.password,
+        rol: 'Empresa',
+      );
+
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const PantallaIngreso()),
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(SupabaseService.mensajeError(e)),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,23 +109,19 @@ class RegistroEmpresaScreen extends StatelessWidget {
 
                           SizedBox(
                             width: double.infinity,
-                            child: Button(
-                              text: 'Registrarse',
-                              backgroundColor: Colors.white,
-                              textColor: Colors.black,
-                              borderRadius: 8.0,
-                              onPressed: () {
-                                //
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const PantallaIngreso(),
+                            child: _isLoading
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Button(
+                                    text: 'Registrarse',
+                                    backgroundColor: Colors.white,
+                                    textColor: Colors.black,
+                                    borderRadius: 8.0,
+                                    onPressed: _registrarse,
                                   ),
-                                  (Route<dynamic> route) => false,
-                                );
-                              },
-                            ),
                           ),
                         ],
                       ),

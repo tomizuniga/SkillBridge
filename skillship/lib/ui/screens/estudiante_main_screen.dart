@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:skillship/models/pasantia.dart';
 import 'package:skillship/models/usuario.dart';
-import 'package:skillship/Services/supabase_service.dart';
-import 'package:skillship/screens/estudiante_detalle_trabajo_screen.dart';
-import 'package:skillship/widgets/button.dart';
+import 'package:skillship/data/repositorio_pasantias.dart';
+import 'package:skillship/data/supabase_service.dart';
+import 'package:skillship/ui/screens/estudiante_detalle_trabajo_screen.dart';
+import 'package:skillship/ui/widgets/button.dart';
 import 'gestionar_pasantia_estudiante.dart';
 
 class EstudianteMainScreen extends StatefulWidget {
@@ -351,7 +352,7 @@ class _BuscarTrabajosScreenContentState
     });
 
     try {
-      final datos = await SupabaseService.instance.obtenerPasantias(
+      final datos = await RepositorioPasantias.instance.obtenerPasantias(
         usuarioId: widget.usuario.id,
       );
       if (!mounted) return;

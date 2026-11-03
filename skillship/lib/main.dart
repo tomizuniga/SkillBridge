@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skillship/screens/pagina_ingreso.dart';
+import 'package:skillship/ui/screens/pagina_ingreso.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -16,7 +16,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(

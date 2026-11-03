@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:skillship/models/pasantia.dart';
 import 'package:skillship/models/usuario.dart';
-import 'package:skillship/Services/supabase_service.dart';
+import 'package:skillship/data/repositorio_pasantias.dart';
+import 'package:skillship/data/supabase_service.dart';
 
 class EstudianteDetalleTrabajoScreen extends StatefulWidget {
   final Pasantia pasantia;
@@ -35,7 +36,7 @@ class _EstudianteDetalleTrabajoScreenState
     setState(() => _enviando = true);
 
     try {
-      final creado = await SupabaseService.instance.postularse(
+      final creado = await RepositorioPasantias.instance.postularse(
         pasantiaId: widget.pasantia.id,
         usuarioId: widget.usuario.id,
       );

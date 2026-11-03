@@ -1,9 +1,9 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:skillship/screens/pagina_ingreso.dart';
-import 'package:skillship/Services/supabase_service.dart';
-import 'package:skillship/widgets/button.dart';
-import 'package:skillship/widgets/upload_field.dart';
+import 'package:skillship/ui/screens/pagina_ingreso.dart';
+import 'package:skillship/data/supabase_service.dart';
+import 'package:skillship/ui/widgets/button.dart';
+import 'package:skillship/ui/widgets/upload_field.dart';
 
 class RegistroEstudianteScreen extends StatefulWidget {
   final String email;

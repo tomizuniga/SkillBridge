@@ -33,6 +33,25 @@ class Pasantia {
 
   bool get yaPostulo => estadoPostulacion != null;
 
+  /// Copia con cambios puntuales. Lo usa el repositorio en modo demo para
+  /// marcar qué propuestas ya tienen postulación.
+  Pasantia copyWith({String? estadoPostulacion}) {
+    return Pasantia(
+      id: id,
+      titulo: titulo,
+      empresa: empresa,
+      ubicacion: ubicacion,
+      modalidad: modalidad,
+      carreraRequerida: carreraRequerida,
+      descripcion: descripcion,
+      requisitos: requisitos,
+      horasSemanales: horasSemanales,
+      duracionSemanas: duracionSemanas,
+      estado: estado,
+      estadoPostulacion: estadoPostulacion ?? this.estadoPostulacion,
+    );
+  }
+
   factory Pasantia.fromMap(Map<String, dynamic> map, {String? estadoPostulacion}) {
     return Pasantia(
       id: (map['id'] as num).toInt(),

@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:skillship/Services/supabase_service.dart';
-import 'package:skillship/widgets/button.dart';
-import 'package:skillship/widgets/upload_field.dart';
-import 'package:skillship/screens/pagina_ingreso.dart';
+import 'package:skillship/data/supabase_service.dart';
+import 'package:skillship/ui/widgets/button.dart';
+import 'package:skillship/ui/widgets/upload_field.dart';
 
-class RegistroEmpresaScreen extends StatefulWidget {
+import 'package:skillship/ui/screens/pagina_ingreso.dart';
+
+class RegistroUniversidadScreen extends StatefulWidget {
   final String email;
   final String password;
 
-  const RegistroEmpresaScreen({
+  const RegistroUniversidadScreen({
     super.key,
     required this.email,
     required this.password,
   });
 
   @override
-  State<RegistroEmpresaScreen> createState() => _RegistroEmpresaScreenState();
+  State<RegistroUniversidadScreen> createState() =>
+      _RegistroUniversidadScreenState();
 }
 
-class _RegistroEmpresaScreenState extends State<RegistroEmpresaScreen> {
+class _RegistroUniversidadScreenState extends State<RegistroUniversidadScreen> {
   bool _isLoading = false;
 
   Future<void> _registrarse() async {
@@ -29,7 +31,7 @@ class _RegistroEmpresaScreenState extends State<RegistroEmpresaScreen> {
       await SupabaseService.instance.crearCuenta(
         email: widget.email,
         password: widget.password,
-        rol: 'Empresa',
+        rol: 'Universidad',
       );
 
       if (!mounted) return;
@@ -89,24 +91,28 @@ class _RegistroEmpresaScreenState extends State<RegistroEmpresaScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          const UploadField(label: 'Institucion'),
+                          const UploadField(label: 'Empresa'),
                           const UploadField(label: 'CUIT'),
+                          const UploadField(label: 'Telefono'),
                           const SizedBox(height: 16),
 
                           // Campos con ícono de carga
                           const UploadField(
-                            label: 'Resolucion',
+                            label: 'Convenio de Marco de Pasantias',
                             isUpload: true,
                           ),
                           const UploadField(
-                            label: 'Copia de DNI de autoridad legal',
+                            label: 'Copia de DNI',
                             isUpload: true,
                           ),
                           const UploadField(
-                            label: 'Acta de designacion',
+                            label: 'Estatuto social',
                             isUpload: true,
                           ),
-
+                          const UploadField(
+                            label: 'Constancia de CUIT',
+                            isUpload: true,
+                          ),
                           SizedBox(
                             width: double.infinity,
                             child: _isLoading

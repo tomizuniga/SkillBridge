@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:skillship/models/usuario.dart';
-import 'package:skillship/screens/empresa_main_screen.dart';
-import 'package:skillship/screens/universidad_main_screen.dart';
-import 'package:skillship/screens/estudiante_main_screen.dart';
-import 'package:skillship/Services/supabase_service.dart';
-import 'package:skillship/widgets/button.dart';
-import 'package:skillship/widgets/text_field.dart';
+import 'package:skillship/ui/screens/empresa_main_screen.dart';
+import 'package:skillship/ui/screens/universidad_main_screen.dart';
+import 'package:skillship/ui/screens/estudiante_main_screen.dart';
+import 'package:skillship/data/supabase_service.dart';
+import 'package:skillship/ui/widgets/button.dart';
+import 'package:skillship/ui/widgets/text_field.dart';
 
 class InicioSesionScreen extends StatefulWidget {
   const InicioSesionScreen({super.key});

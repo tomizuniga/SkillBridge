@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:skillship/models/postulacion.dart';
 import 'package:skillship/models/reclamo.dart';
 import 'package:skillship/models/usuario.dart';
-import 'package:skillship/Services/supabase_service.dart';
-import 'package:skillship/widgets/button.dart';
+import 'package:skillship/data/repositorio_pasantias.dart';
+import 'package:skillship/data/supabase_service.dart';
+import 'package:skillship/ui/widgets/button.dart';
 
 class GestionarPasantiaScreen extends StatefulWidget {
   final Usuario usuario;
@@ -48,7 +49,7 @@ class _GestionarPasantiaScreenState extends State<GestionarPasantiaScreen> {
     });
 
     try {
-      final servicio = SupabaseService.instance;
+      final servicio = RepositorioPasantias.instance;
       final postulaciones = await servicio.obtenerPostulaciones(
         usuarioId: widget.usuario.id,
       );
@@ -98,7 +99,7 @@ class _GestionarPasantiaScreenState extends State<GestionarPasantiaScreen> {
     if (enProceso == null) return;
 
     try {
-      final reclamos = await SupabaseService.instance.obtenerReclamos(
+      final reclamos = await RepositorioPasantias.instance.obtenerReclamos(
         postulacionId: enProceso.id,
       );
       if (!mounted) return;
@@ -138,7 +139,7 @@ class _GestionarPasantiaScreenState extends State<GestionarPasantiaScreen> {
     setState(() => _enviandoReclamo = true);
 
     try {
-      await SupabaseService.instance.enviarReclamo(
+      await RepositorioPasantias.instance.enviarReclamo(
         postulacionId: enProceso.id,
         mensaje: mensaje,
       );

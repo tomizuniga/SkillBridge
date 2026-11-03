@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:skillship/screens/inicio_sesion.dart';
-import 'package:skillship/screens/registro.dart';
-import 'package:skillship/widgets/button.dart';
+import 'package:skillship/ui/screens/inicio_sesion.dart';
+import 'package:skillship/ui/screens/registro.dart';
+import 'package:skillship/ui/widgets/button.dart';
 
 class PantallaIngreso extends StatelessWidget {
   const PantallaIngreso({super.key});

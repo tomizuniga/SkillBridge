@@ -1,12 +1,12 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:skillship/models/pasantia.dart';
-import 'package:skillship/models/postulacion.dart';
-import 'package:skillship/models/reclamo.dart';
 import 'package:skillship/models/usuario.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Capa de datos del proyecto: centraliza todo lo que habla con Supabase
-/// (registro con subida de archivos, login, pasantías, postulaciones y horas).
+/// Capa de datos del proyecto: todo lo que habla con Supabase para el
+/// **registro con subida de archivos**, el **login** y el **perfil**.
+///
+/// (Las pasantías, postulaciones, horas y reclamos viven en
+/// `repositorio_pasantias.dart`, que elige entre Supabase o datos de prueba.)
 ///
 /// Requiere haber ejecutado `supabase/schema.sql` en el SQL Editor de Supabase.
 class SupabaseService {
@@ -238,108 +238,6 @@ class SupabaseService {
     }
 
     return usuario;
-  }
-
-  // ===========================================================================
-  // PASANTÍAS Y POSTULACIONES
-  // ===========================================================================
-
-  /// Propuestas disponibles, marcando si el estudiante ya postuló a alguna.
-  Future<List<Pasantia>> obtenerPasantias({required int usuarioId}) async {
-    final filas = await _client
-        .from('pasantias')
-        .select()
-        .eq('estado', 'disponible')
-        .order('id', ascending: false);
-
-    final postulaciones = await _client
-        .from('postulaciones')
-        .select('pasantia_id, estado')
-        .eq('usuario_id', usuarioId);
-
-    final Map<int, String> estados = {
-      for (final p in postulaciones)
-        (p['pasantia_id'] as num).toInt(): p['estado']?.toString() ?? '',
-    };
-
-    return filas
-        .map((f) => Pasantia.fromMap(
-              f,
-              estadoPostulacion: estados[(f['id'] as num).toInt()],
-            ))
-        .toList();
-  }
-
-  /// Devuelve `true` si se creó la postulación, `false` si ya había postulado.
-  Future<bool> postularse({
-    required int pasantiaId,
-    required int usuarioId,
-  }) async {
-    final existente = await _client
-        .from('postulaciones')
-        .select('id')
-        .eq('pasantia_id', pasantiaId)
-        .eq('usuario_id', usuarioId)
-        .limit(1);
-
-    if (existente.isNotEmpty) return false;
-
-    await _client.from('postulaciones').insert({
-      'pasantia_id': pasantiaId,
-      'usuario_id': usuarioId,
-      'estado': 'pendiente',
-    });
-    return true;
-  }
-
-  /// Todas las postulaciones del estudiante con su propuesta (join `pasantias(*)`).
-  Future<List<Postulacion>> obtenerPostulaciones({required int usuarioId}) async {
-    final filas = await _client
-        .from('postulaciones')
-        .select('id, pasantia_id, usuario_id, estado, tutor, fecha_inicio, created_at, pasantias(*)')
-        .eq('usuario_id', usuarioId)
-        .order('created_at', ascending: false);
-
-    return filas.map(Postulacion.fromMap).toList();
-  }
-
-  /// Horas cargadas para una postulación, de la más vieja a la más nueva.
-  Future<List<RegistroHora>> obtenerHoras({required int postulacionId}) async {
-    final filas = await _client
-        .from('horas_pasantia')
-        .select()
-        .eq('postulacion_id', postulacionId)
-        .order('fecha');
-
-    return filas.map(RegistroHora.fromMap).toList();
-  }
-
-  /// Reclamos enviados para una postulación, del más nuevo al más viejo.
-  Future<List<Reclamo>> obtenerReclamos({required int postulacionId}) async {
-    final filas = await _client
-        .from('reclamos')
-        .select()
-        .eq('postulacion_id', postulacionId)
-        .order('created_at', ascending: false);
-
-    return filas.map(Reclamo.fromMap).toList();
-  }
-
-  /// Guarda un reclamo del estudiante en la base de datos.
-  Future<void> enviarReclamo({
-    required int postulacionId,
-    required String mensaje,
-  }) async {
-    final texto = mensaje.trim();
-    if (texto.isEmpty) {
-      throw Exception('Escribí el reclamo antes de enviarlo.');
-    }
-
-    await _client.from('reclamos').insert({
-      'postulacion_id': postulacionId,
-      'mensaje': texto,
-      'estado': 'abierto',
-    });
   }
 
   // ===========================================================================

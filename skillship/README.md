@@ -77,14 +77,36 @@ un **reclamo de ejemplo** en el apartado de Reclamos y una postulación **pendie
 ```
 lib/
 ├── main.dart                  # Arranque + conexión a Supabase
-├── models/                    # Usuario, Pasantia, Postulacion, RegistroHora
-├── Services/
-│   └── supabase_service.dart  # Toda la lógica contra Supabase
-├── screens/                   # Pantallas (una por flujo/rol)
-└── widgets/                   # Button, CustomTextField, UploadField
+├── models/                    # Capa de modelos: Usuario, Pasantia,
+│                              # Postulacion, RegistroHora, Reclamo
+├── data/                      # Capa de datos (sin lógica en los widgets)
+│   ├── supabase_service.dart      # Registro con archivos, login, perfil
+│   ├── pasantias_repository.dart  # Interfaz PasantiasRepository
+│   ├── supabase_pasantias_repository.dart  # Implementación real
+│   ├── mock_pasantias_repository.dart      # Mock en memoria
+│   ├── datos_de_prueba.dart                # Listas de datos de prueba
+│   └── repositorio_pasantias.dart          # Fachada con fallback a mocks
+└── ui/                        # Capa de presentación
+    ├── screens/               # Pantallas (una por flujo/rol)
+    └── widgets/               # Button, CustomTextField, UploadField
 supabase/
 └── schema.sql                 # Esquema + RLS + Storage + datos de ejemplo
 ```
+
+### Capa de repositorios (patrón Repository)
+
+Las pantallas **no** hablan directamente con Supabase: solo conocen la
+interfaz `PasantiasRepository`.
+
+```
+UI (screens/)  →  RepositorioPasantias (fachada)
+                        ├─ SupabasePasantiasRepository  → base de datos real
+                        └─ MockPasantiasRepository       → datos de prueba en listas
+```
+
+La fachada prueba la conexión una sola vez: si Supabase responde usa la base
+real; si no (falta `schema.sql`, no hay red, etc.) queda en **modo demo** con
+los mocks de `datos_de_prueba.dart`, así la demo nunca se rompe.
 
 ---
 
